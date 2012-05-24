@@ -1,12 +1,17 @@
-
+<?php
+session_start();
+include("config.php");
+include("functions.php");
+$conn = connect();
+?>
 <!DOCTYPE html>
 <html lang="en">
 	<head>
 		<meta charset="utf-8">
-		<title>Bootstrap, from Twitter</title>
+		<title>MPhoto</title>
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
-		<meta name="description" content="">
-		<meta name="author" content="">
+		<meta name="description" content="Simple photo gallery">
+		<meta name="author" content="Marko Kaartinen">
 
 		<!-- Le styles -->
 		<link href="./css/bootstrap.min.css" rel="stylesheet">
@@ -41,9 +46,7 @@
 					<a class="brand" href="index.php">MPhoto</a>
 					<div class="nav-collapse">
 						<ul class="nav">
-							<li class="active"><a href="#">Home</a></li>
-							<li><a href="#about">About</a></li>
-							<li><a href="#contact">Contact</a></li>
+							<li class="active"><a href="index.php">Home</a></li>
 						</ul>
 					</div><!--/.nav-collapse -->
 				</div>
@@ -53,8 +56,14 @@
 		<div class="container">
 			<h1>Header</h1>
 			<p>Photo folder list.</p>
+			
+			<hr />
+			
+			<footer>
+				<p>&copy; Marko Kaartinen - Powered by Bootstrap</p>
+			</footer>
 		</div> <!-- /container -->
-	
+				
 		<!-- Le javascript
 		================================================== -->
 		<!-- Placed at the end of the document so the pages load faster -->
