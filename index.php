@@ -94,6 +94,7 @@ $messages["404"] 			= 	array("bad" => 1, "message" => "Ooops, did not get that r
 				echo '<div class="'.$errorStyle.'"><a class="close" data-dismiss="alert" href="#">×</a>'.$messages[$msg]['message'].'</div>';
 			}
 			
+			//dynamic page system
 			if($page == ""){
 				include("./pages/front.php");
 			}else{
