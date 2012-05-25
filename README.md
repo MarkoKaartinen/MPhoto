@@ -3,8 +3,6 @@ MPhoto
 
 Photo sharing platform for novice photographers. This will allow photographer to share his photos to specific group. It will ask password and show right photo folders to user.
 
-In future it will support public photo folders also.
-
 Features (1.0) 
 --------------
 
