@@ -6,7 +6,7 @@ Photo sharing platform for novice photographers. This will allow photographer to
 Planned features
 ----------------
 
-Version 1.0 
+*Version 1.0*
 
 - Password protected photo folder sharing
 - Photo upload via FTP (not browser upload)
@@ -15,12 +15,12 @@ Version 1.0
 - Folder management
 - Thumbnail generator
 
-Version 1.1
+*Version 1.1*
 
 - Photo upload via browser
 - Subfolder support
 
-Version 1.2
+*Version 1.2*
 
 - Public folders
 - Folder cover

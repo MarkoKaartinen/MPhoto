@@ -102,4 +102,35 @@ function generateSlug($phrase, $maxLength = 255){
 	return $result;
 }
 
+function isThereFolderAlready($slug){
+	global $conn;
+	try {
+		$sql = $conn->prepare("SELECT * FROM photos WHERE p_slug = ?");
+		$sql->bindValue(1, $slug);
+		$sql->execute();
+	} catch (PDOException $e) {
+		die("ERROR: " . $e->getMessage());
+	}
+	if($sql->rowCount() == 1){
+		return true;
+	}else{
+		return false;
+	}
+}
+
+//will create folder 
+function createFolder($name){
+	$origslug = generateSlug($name);
+	if(isThereFolderAlready($origslug) == true){
+		$i = 1;
+		while(isThereFolderAlready($slug) != false){
+			$slug = $origslug."-".$i
+			$i++;
+		}
+	}else{
+		$slug = $origslug;
+	}
+	
+}
+
 ?>
