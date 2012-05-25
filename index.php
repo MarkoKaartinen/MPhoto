@@ -3,6 +3,32 @@ session_start();
 include("config.php");
 include("functions.php");
 $conn = connect();
+$page = $_GET['p'];
+$msg = $_GET['msg'];
+$do = $_GET['do'];
+
+//lets check if login is right
+if($do == "tryLogin"){
+	$try = checkPass(pass($_POST['password']));
+	if($try != false){
+		login($try);
+		$msg = "loginSuccess";
+	}else{
+		$msg = "loginFail";
+	}
+}
+//logout
+if($do == "logout"){
+	logout();
+	$msg = "logoutSuccess";
+}
+
+//some error messages
+$messages["loginFail"] 		= 	array("bad" => 1, "message" => "Ooops, wrong password!");
+$messages["loginSuccess"] 	= 	array("bad" => 0, "message" => "You have been logged in!");
+$messages["logoutSuccess"] 	= 	array("bad" => 0, "message" => "You have been logged out!");
+$messages["404"] 			= 	array("bad" => 1, "message" => "Ooops, did not get that right!");
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -21,6 +47,7 @@ $conn = connect();
 			}
 		</style>
 		<link href="./css/bootstrap-responsive.min.css" rel="stylesheet">
+		<link href="./css/style.css" rel="stylesheet">
 
 		<!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
 		<!--[if lt IE 9]>
@@ -46,16 +73,37 @@ $conn = connect();
 					<a class="brand" href="index.php">MPhoto</a>
 					<div class="nav-collapse">
 						<ul class="nav">
-							<li class="active"><a href="index.php">Home</a></li>
+							<li<?php if($page == ""){ echo' class="active" '; } ?>><a href="index.php">Home</a></li>
+							<?php if(isAdmin()){ ?><li<?php if($page == "admin"){ echo' class="active" '; } ?>><a href="index.php?p=admin">Admin</a></li><?php } ?>
+							<?php if(checkLogin()){ ?><li><a href="index.php?do=logout">Logout</a></li><?php } ?>
 						</ul>
 					</div><!--/.nav-collapse -->
 				</div>
 			</div>
 		</div>
 	
-		<div class="container">
-			<h1>Header</h1>
-			<p>Photo folder list.</p>
+		<div class="container" id="content">
+			<?php
+			//show error message if there is one
+			if($msg != ""){
+				if($messages[$msg]['bad'] == 1){
+					$errorStyle = "alert alert-error";
+				}else{
+					$errorStyle = "alert alert-success";
+				}
+				echo '<div class="'.$errorStyle.'"><a class="close" data-dismiss="alert" href="#">×</a>'.$messages[$msg]['message'].'</div>';
+			}
+			
+			if($page == ""){
+				include("./pages/front.php");
+			}else{
+				if(file_exists("./pages/$page.php")){
+					include("./pages/$page.php");
+				}else{
+					include("./pages/front.php?msg=404");
+				}
+			}
+			?>
 			
 			<hr />
 			

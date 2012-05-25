@@ -7,6 +7,28 @@ function pass($pass){
 	return $pass;
 }
 
+//will check pass and return pass id or admin
+function checkPass($pass){
+	global $adminPass, $conn;
+	if($pass == $adminPass){
+		return "admin";
+	}else{
+		try {
+			$sql = $conn->prepare("SELECT * FROM password WHERE pa_pass = ?");
+			$sql->bindValue(1, $pass);
+			$sql->execute();
+		} catch (PDOException $e) {
+			die("ERROR: " . $e->getMessage());
+		}
+		if($sql->rowCount() == 1){
+			$data = $sql->fetchObject();
+			return $data->pa_id;
+		}else{
+			return false;
+		}
+	}
+}
+
 //This will check if you are logged in or not
 function checkLogin(){
 	if($_SESSION['mphoto_uid'] != ""){
