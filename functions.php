@@ -90,18 +90,21 @@ function connect(){
 	return $conn;
 }
 
-//will generate slug for the photo folder (Folder name -> folder-name)
-function generateSlug($phrase, $maxLength = 255){
-	$result = strtolower($phrase);
+//will generate slug for the photo folder (Folder name -> folder-name) (source: http://cubiq.org/the-perfect-php-clean-url-generator)
+function generateSlug($str, $replace=array(), $delimiter='-') {
+	if( !empty($replace) ) {
+		$str = str_replace((array)$replace, ' ', $str);
+	}
 
-	$result = preg_replace("/[^a-z0-9\s-]/", "", $result);
-	$result = trim(preg_replace("/[\s-]+/", " ", $result));
-	$result = trim(substr($result, 0, $maxLength));
-	$result = preg_replace("/\s/", "-", $result);
+	$clean = iconv('UTF-8', 'ASCII//TRANSLIT', $str);
+	$clean = preg_replace("/[^a-zA-Z0-9\/_|+ -]/", '', $clean);
+	$clean = strtolower(trim($clean, '-'));
+	$clean = preg_replace("/[\/_|+ -]+/", $delimiter, $clean);
 
-	return $result;
+	return $clean;
 }
 
+//will check if there is a folder with that slug already
 function isThereFolderAlready($slug){
 	global $conn;
 	try {
@@ -118,19 +121,108 @@ function isThereFolderAlready($slug){
 	}
 }
 
+function getFolderPasses($p_id){
+	global $conn;
+	try {
+		$sql = $conn->prepare("SELECT * FROM passwords INNER JOIN p_pa on pa_id = pa_nro WHERE p_nro = ?");
+		$sql->bindValue(1, $p_id);
+		$sql->execute();
+	} catch (PDOException $e) {
+		die("ERROR: " . $e->getMessage());
+	}
+	return $sql->fetchAll();
+}
+
+function getFolders(){
+	global $conn;
+	try {
+		$sql = $conn->prepare("SELECT * FROM photos");
+		$sql->execute();
+	} catch (PDOException $e) {
+		die("ERROR: " . $e->getMessage());
+	}
+	return $sql->fetchAll();
+}
+
+//get all passwords
+function getPasses(){
+	global $conn;
+	try {
+		$sql = $conn->prepare("SELECT * FROM passwords");
+		$sql->execute();
+	} catch (PDOException $e) {
+		die("ERROR: " . $e->getMessage());
+	}
+	return $sql->fetchAll();
+}
+
 //will create folder 
-function createFolder($name){
+function createFolder($name, $pass, $desc, $passid = false){
+	global $conn;
 	$origslug = generateSlug($name);
 	if(isThereFolderAlready($origslug) == true){
 		$i = 1;
-		while(isThereFolderAlready($slug) != false){
-			$slug = $origslug."-".$i
+		$foldcheck = true;
+		while($foldcheck == true){
+			$slug = $origslug."-".$i;
 			$i++;
+			$foldcheck = isThereFolderAlready($slug);
 		}
 	}else{
 		$slug = $origslug;
 	}
+
+	try {
+		$sql = $conn->prepare("INSERT INTO photos (p_name, p_slug) VALUES(?, ?)");
+		$sql->bindValue(1, $name);
+		$sql->bindValue(2, $slug);
+		$sql->execute();
+		$photo_id = $conn->lastInsertId();
+	} catch (PDOException $e) {
+		die("ERROR: " . $e->getMessage());
+	}
 	
+	if($passid == false){	
+		$pass = pass($pass);
+		try {
+			$sql = $conn->prepare("INSERT INTO passwords (pa_pass, pa_desc) VALUES(?, ?)");
+			$sql->bindValue(1, $pass);
+			$sql->bindValue(2, $desc);
+			$sql->execute();
+			$pass_id = $conn->lastInsertId();
+		} catch (PDOException $e) {
+			die("ERROR: " . $e->getMessage());
+		}
+	}else{
+		$pass_id = $passid;
+	}
+	
+	try {
+		$sql = $conn->prepare("INSERT INTO p_pa (p_nro, pa_nro) VALUES(?, ?)");
+		$sql->bindValue(1, $photo_id);
+		$sql->bindValue(2, $pass_id);
+		$sql->execute();
+	} catch (PDOException $e) {
+		die("ERROR: " . $e->getMessage());
+	}
+	
+	if(mkdir("./photos/$slug")){
+		return true;
+	}else{
+		return false;
+	}
 }
 
+//functiont that sows error messages (and other messages)
+function showErrorMsg($msg){
+	global $messages;
+	if($msg != ""){
+		if($messages[$msg]['bad'] == 1){
+			$errorStyle = "alert alert-error";
+		}else{
+			$errorStyle = "alert alert-success";
+		}
+		echo '<div class="'.$errorStyle.'"><a class="close" data-dismiss="alert" href="#">×</a>'.$messages[$msg]['message'].'</div>';
+	}
+}
 ?>

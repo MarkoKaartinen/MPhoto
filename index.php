@@ -24,10 +24,12 @@ if($do == "logout"){
 }
 
 //some error messages
-$messages["loginFail"] 		= 	array("bad" => 1, "message" => "Ooops, wrong password!");
-$messages["loginSuccess"] 	= 	array("bad" => 0, "message" => "You have been logged in!");
-$messages["logoutSuccess"] 	= 	array("bad" => 0, "message" => "You have been logged out!");
-$messages["404"] 			= 	array("bad" => 1, "message" => "Ooops, did not get that right!");
+$messages["loginFail"] 			= 	array("bad" => 1, "message" => "Ooops, wrong password!");
+$messages["loginSuccess"] 		= 	array("bad" => 0, "message" => "You have been logged in!");
+$messages["folderAddFail"] 		= 	array("bad" => 1, "message" => "Adding folder failed!");
+$messages["folderAddSuccess"] 	= 	array("bad" => 0, "message" => "Folder created!");
+$messages["logoutSuccess"] 		= 	array("bad" => 0, "message" => "You have been logged out!");
+$messages["404"] 				= 	array("bad" => 1, "message" => "Ooops, did not get that right!");
 
 ?>
 <!DOCTYPE html>
@@ -85,14 +87,7 @@ $messages["404"] 			= 	array("bad" => 1, "message" => "Ooops, did not get that r
 		<div class="container" id="content">
 			<?php
 			//show error message if there is one
-			if($msg != ""){
-				if($messages[$msg]['bad'] == 1){
-					$errorStyle = "alert alert-error";
-				}else{
-					$errorStyle = "alert alert-success";
-				}
-				echo '<div class="'.$errorStyle.'"><a class="close" data-dismiss="alert" href="#">×</a>'.$messages[$msg]['message'].'</div>';
-			}
+			showErrorMsg($msg);
 			
 			//dynamic page system
 			if($page == ""){
@@ -118,5 +113,6 @@ $messages["404"] 			= 	array("bad" => 1, "message" => "Ooops, did not get that r
 		<!-- Placed at the end of the document so the pages load faster -->
 		<script src="./js/jquery.js"></script>
 		<script src="./js/bootstrap.min.js"></script>
+		<script src="./js/js.js"></script>
 	</body>
 </html>
